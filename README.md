@@ -20,7 +20,7 @@ Desarrollar un sistema que centralice el proceso de atención técnica, desde la
 | Base de datos | PostgreSQL |
 | ORM | Prisma 7 |
 | API | REST |
-| Autenticación prevista | JWT |
+| Autenticación prevista | JWT de acceso + refresh token; Argon2id para contraseñas |
 
 ## Roles
 
@@ -81,8 +81,8 @@ Recepción → Diagnóstico → Reparación → Control de Calidad → Entrega.
 
 ## Documentación
 
-Consultar `docs/CONTEXTO_GPT_DESKTOP.md` para conocer las reglas, arquitectura y planificación del desarrollo.
+Consultar `docs/CONTEXTO_GPT_DESKTOP.md` para conocer las reglas generales de desarrollo y `docs/DISEÑO_TECNICO_SPRINT_1.md` para la arquitectura, permisos, contratos y plan aprobado del Sprint 1.
 
 ## Estado
 
-Base técnica inicial preparada. Desarrollo funcional pendiente.
+Base técnica inicial preparada. La configuración de Fase 0 está lista y el esquema de Fase 1 está preparado para revisión. No se ha aplicado ninguna migración; la implementación funcional del Sprint 1 está pendiente.
