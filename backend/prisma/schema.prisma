@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Rol {
+  ADMIN
+  GERENTE
+  TECNICO
+  RECEPCIONISTA
+  CLIENTE_B2B
+}
+
+enum EstatusOrden {
+  RECEPCION
+  DIAGNOSTICO
+  REPARACION
+  CONTROL_CALIDAD
+  ENTREGA
+}
+
+enum Prioridad {
+  BAJA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+model Usuario {
+  id            String   @id @default(uuid())
+  nombre        String
+  email         String   @unique
+  passwordHash  String
+  rol           Rol      @default(RECEPCIONISTA)
+  activo        Boolean  @default(true)
+  convenioId    String?
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  convenio         Convenio?       @relation(fields: [convenioId], references: [id])
+  ordenesAsignadas OrdenServicio[] @relation("TecnicoAsignado")
+  ordenesRecibidas OrdenServicio[] @relation("Recepcionista")
+}
+
+model Convenio {
+  id                  String   @id @default(uuid())
+  nombreEmpresa       String
+  razonSocial         String?
+  rfc                 String?  @unique
+  contacto            String?
+  email               String?
+  telefono            String?
+  descuentoPorcentaje Decimal  @default(0) @db.Decimal(5, 2)
+  comisionPorcentaje  Decimal  @default(0) @db.Decimal(5, 2)
+  condicionesGarantia String?
+  activo              Boolean  @default(true)
+  creadoEn            DateTime @default(now())
+  actualizadoEn       DateTime @updatedAt
+
+  usuarios Usuario[]
+  equipos  Equipo[]
+}
+
+model Equipo {
+  id            String   @id @default(uuid())
+  tipo          String
+  marca         String?
+  modelo        String?
+  numeroSerie   String?
+  descripcion   String?
+  convenioId    String?
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  convenio Convenio?       @relation(fields: [convenioId], references: [id])
+  ordenes  OrdenServicio[]
+}
+
+model OrdenServicio {
+  id                  String       @id @default(uuid())
+  folio               String       @unique
+  equipoId            String
+  tecnicoId           String?
+  recepcionistaId     String?
+  estatus             EstatusOrden @default(RECEPCION)
+  prioridad           Prioridad    @default(MEDIA)
+  diagnostico         String?
+  reparacionRealizada String?
+  costo               Decimal      @default(0) @db.Decimal(10, 2)
+  comision            Decimal      @default(0) @db.Decimal(10, 2)
+  fechaRecepcion      DateTime     @default(now())
+  fechaEntrega        DateTime?
+  creadoEn            DateTime     @default(now())
+  actualizadoEn       DateTime     @updatedAt
+
+  equipo        Equipo          @relation(fields: [equipoId], references: [id])
+  tecnico       Usuario?        @relation("TecnicoAsignado", fields: [tecnicoId], references: [id])
+  recepcionista Usuario?        @relation("Recepcionista", fields: [recepcionistaId], references: [id])
+  bitacora      BitacoraOrden[]
+}
+
+model BitacoraOrden {
+  id              String        @id @default(uuid())
+  ordenId         String
+  estatusAnterior EstatusOrden?
+  estatusNuevo    EstatusOrden
+  nota            String?
+  fecha           DateTime      @default(now())
+
+  orden OrdenServicio @relation(fields: [ordenId], references: [id], onDelete: Cascade)
+}
