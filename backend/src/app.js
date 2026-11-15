@@ -3,6 +3,8 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 
+const convenioRoutes = require("./routes/convenio.routes");
+
 const app = express();
 
 app.use(helmet());
@@ -20,6 +22,9 @@ app.get("/api/health", (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
+
+// Rutas del módulo de Convenios y Tarifas
+app.use("/api/convenios", convenioRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
